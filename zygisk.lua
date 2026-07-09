@@ -1,34 +1,39 @@
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
-local CorrectKey = "ZYGAME_VN"
-local KeyLink = "https://direct-link.net/7281791/NJUhvvC7PK7S"
+-- Cấu hình
+local CorrectKey = "zygamevn"
+local GetKeyLink = "https://direct-link.net/7281791/NJUhvvC7PK7S"
 local TargetScript = "https://raw.githubusercontent.com/VTDROBLOX/Animehub/refs/heads/main/Tayhub.lua"
 
--- 1. Cửa sổ Login
+-- 1. Cửa sổ Key System
 local KeyWindow = Fluent:CreateWindow({
-    Title = "Zygame Hub | Login",
+    Title = "Zygame Hub | Security",
     SubTitle = "Xác thực truy cập",
     TabWidth = 160,
-    Size = UDim2.fromOffset(400, 250),
+    Size = UDim2.fromOffset(400, 280),
     Theme = "Dark",
 })
 
 local KeyTab = KeyWindow:AddTab({ Title = "Login", Icon = "key" })
-local InputKey = ""
+local UserInput = ""
 
-KeyTab:AddInput("Input", {Title = "Nhập Key:", Default = "", Callback = function(v) InputKey = v end})
+KeyTab:AddInput("KeyInput", {
+    Title = "Nhập Key:",
+    Default = "",
+    Callback = function(v) UserInput = v end
+})
 
 KeyTab:AddButton({
     Title = "Xác nhận",
     Callback = function()
-        if InputKey == CorrectKey then
+        if UserInput == CorrectKey then
             KeyWindow:Destroy()
-            -- Tự động chạy script khi đúng Key
+            -- Load script phụ tự động
             loadstring(game:HttpGet(TargetScript))()
-            -- Hiện Menu của bạn
+            -- Load menu chính
             LoadMainHub()
         else
-            Fluent:Notify({Title = "Thất bại", Content = "Key sai!", Duration = 3})
+            Fluent:Notify({Title = "Thất bại", Content = "Key sai rồi!", Duration = 3})
         end
     end
 })
@@ -36,26 +41,28 @@ KeyTab:AddButton({
 KeyTab:AddButton({
     Title = "Get Key",
     Callback = function()
-        setclipboard(KeyLink)
-        Fluent:Notify({Title = "Thông báo", Content = "Đã copy link!", Duration = 3})
+        setclipboard(GetKeyLink)
+        Fluent:Notify({Title = "Thông báo", Content = "Đã copy link lấy key!", Duration = 3})
     end
 })
 
--- 2. Menu chính
+-- 2. Logic Menu Chính
 function LoadMainHub()
     local Window = Fluent:CreateWindow({
-        Title = "Zygame Hub | Blox Fruit",
-        SubTitle = "v1.0",
+        Title = "Zygame Hub | V1.0",
+        SubTitle = "Chào mừng bạn đã trở lại",
         TabWidth = 160,
         Size = UDim2.fromOffset(580, 460),
         Acrylic = true,
         Theme = "Dark",
     })
 
+    -- Đổi tên Tab thành "Script Farm"
     local FarmTab = Window:AddTab({ Title = "Script Farm", Icon = "sword" })
     FarmTab:AddToggle("FastAttack", {Title = "Fast Attack", Default = false, Callback = function(v) _G.FastAttack = v end})
-    FarmTab:AddToggle("AutoFarm", {Title = "Auto Farm Level", Default = false, Callback = function(v) _G.AutoFarm = v end})
+    FarmTab:AddToggle("AutoClick", {Title = "Auto Click", Default = false, Callback = function(v) _G.AutoClick = v end})
     
+    -- Thêm tính năng Jay FREEMIUM
     FarmTab:AddButton({
         Title = "Jay FREEMIUM",
         Callback = function()
@@ -75,10 +82,18 @@ end
 -- 3. Logic chạy ngầm
 task.spawn(function()
     while task.wait(0.05) do
-        if _G.FastAttack then
-            local char = game.Players.LocalPlayer.Character
-            local tool = char and char:FindFirstChildOfClass("Tool")
+        local player = game.Players.LocalPlayer
+        local char = player.Character
+        
+        if _G.FastAttack and char then
+            local tool = char:FindFirstChildOfClass("Tool")
             if tool then tool:Activate() end
+        end
+        
+        -- Sửa lại AutoClick để tránh lỗi tràn bộ nhớ
+        if _G.AutoClick then
+            game:GetService("VirtualUser"):CaptureController()
+            game:GetService("VirtualUser"):ClickButton1(Vector2.new(999, 999))
         end
     end
 end)
