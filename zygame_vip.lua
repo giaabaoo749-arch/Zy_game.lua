@@ -1,5 +1,5 @@
 --// Zygame Hub | Blox Fruit Edition
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua", true))()
 
 --// CẤU HÌNH
 local CorrectKey = "ZYGAME_VN"
@@ -35,7 +35,11 @@ function LoadMainHub()
         if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v end 
     end})
     
-    loadstring(game:HttpGet(TargetScript))()
+    -- Tải script phụ với độ trễ nhỏ để tránh 429
+    task.wait(1) 
+    local success, result = pcall(function() return loadstring(game:HttpGet(TargetScript, true))() end)
+    if not success then warn("Lỗi tải Script phụ: " .. tostring(result)) end
+    
     Fluent:Notify({Title = "Thành công", Content = "Zygame Hub đã sẵn sàng!", Duration = 3})
 end
 
@@ -63,7 +67,7 @@ end
 
 --// LOGIC CHẠY NGẦM
 task.spawn(function()
-    while task.wait(0.05) do
+    while task.wait(0.1) do -- Tăng thời gian chờ từ 0.05 lên 0.1 để giảm tải cho CPU
         local char = game.Players.LocalPlayer.Character
         if _G.FastAttack and char and char:FindFirstChildOfClass("Tool") then char:FindFirstChildOfClass("Tool"):Activate() end
         if _G.AutoClick then
